@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: main
+  pull_request:
+  schedule:
+  - cron: '0 10 * * Sat'
+permissions:
+  contents: read
+
+jobs:
+  tests:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - name: Install Crystal
+        uses: oprypin/install-crystal@v1
+        with:
+          crystal: latest
+
+      - name: Checkout branch
+        uses: actions/checkout@v4
+
+      - name: Run linter
+        run: crystal tool format --check
+
+      - name: Run tests
+        run: crystal spec
